@@ -20,17 +20,17 @@ Note for english readers: This MagicMirror² modules shows the menu of german sc
 
 ```javascript
 {
-	module: "MMM-MensaMax",
-	position: "top_left",
-	config: {
-		users: [
-			{
-				projekt: "XY123",
-				benutzername: "xxxxxxx",
-				passwort: "xxxxxxx"
-			}
-		]
-	}
+  module: "MMM-MensaMax",
+  position: "top_left",
+  config: {
+    users: [
+      {
+        projekt: "XY123",
+        benutzername: "xxxxxxx",
+        passwort: "xxxxxxx"
+      }
+    ]
+  }
 }
 ```
 
@@ -40,27 +40,27 @@ Werte für _projekt_, _benutzername_ und _passwort_ durch die ersetzen, die beim
 
 ```javascript
 {
-	module: "MMM-MensaMax",
-	position: "top_left",
-	config: {
-		users: [
-			{
-				projekt: "XY123",
-				benutzername: "xxxxxxx",
-				passwort: "xxxxxxx"
-			},
-			{
-				projekt: "XY123",
-				benutzername: "yyyyyyy",
-				passwort: "yyyyyy"
-			},
-			{
-				projekt: "XY123",
-				benutzername: "zzzzzz",
-				passwort: "zzzzz"
-			}
-		]
-	}
+  module: "MMM-MensaMax",
+  position: "top_left",
+  config: {
+    users: [
+      {
+        projekt: "XY123",
+        benutzername: "xxxxxxx",
+        passwort: "xxxxxxx"
+      },
+      {
+        projekt: "XY123",
+        benutzername: "yyyyyyy",
+        passwort: "yyyyyy"
+      },
+      {
+        projekt: "XY123",
+        benutzername: "zzzzzz",
+        passwort: "zzzzz"
+      }
+    ]
+  }
 }
 ```
 
