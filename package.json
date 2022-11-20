@@ -1,0 +1,26 @@
+{
+  "name": "MMM-MensaMax",
+  "version": "0.0.1",
+  "description": "MagicMirror² module - get Speiseplan for a MensaMax customer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuerst/MMM-MensaMax.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "MensMax",
+    "Speiseplan",
+    "magic mirror",
+    "smart mirror"
+  ],
+  "author": "fuerst",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuerst/MMM-MensaMax/issues"
+  },
+  "homepage": "https://github.com/fuerst/MMM-MensaMax#readme",
+  "dependencies": {
+    "graphql-request": "^5.0.0",
+    "node-fetch": "2"
+  }
+}

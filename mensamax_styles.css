@@ -1,0 +1,18 @@
+.mensamax table {
+  text-align: left;
+  margin: 0 0.5rem 1rem;
+}
+
+.mensamax th,
+.mensamax td {
+  word-wrap: break-word;
+}
+
+.mensamax th:first-child,
+.mensamax td:first-child {
+  padding-right: 1rem;
+}
+
+.mensamax .red {
+  color: red;
+}
