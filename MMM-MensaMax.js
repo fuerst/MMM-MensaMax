@@ -5,7 +5,7 @@ Module.register("MMM-MensaMax", {
 		year: 2022,
 		monday: '',
 		friday: '',
-  },
+    },
 
 	getStyles: function () {
 		return ["mensamax_styles.css"];
@@ -61,6 +61,8 @@ Module.register("MMM-MensaMax", {
 	},
 
 	getDom: function () {
+		const TEXT_WAIT_FOR_DATA = '<em class="xsmall thin">Warte auf Daten...</em>';
+
 		let content = '';
 		for (const [, user] of this.dataStore.entries()) {
 			if (!user.bestelluebersicht) {
@@ -86,16 +88,13 @@ Module.register("MMM-MensaMax", {
 				content += '<tr><td class="xsmall dimmed">' + day + '</td><td class="xsmall bright">' + bestellung + '</td></tr>';
 			})
 			content += '</table>';
-
 		}
-		this.dataStore.forEach(user => {
-		});
 
-    var wrapper = document.createElement("div");
+		var wrapper = document.createElement("div");
 		wrapper.classList.add('mensamax');
-		wrapper.innerHTML = content;
-    return wrapper;
-  },
+		wrapper.innerHTML = content || TEXT_WAIT_FOR_DATA;
+		return wrapper;
+	},
 
 	storeAddData: function(benutzername, key, value) {
 		if (! this.dataStore.has(benutzername)) {
