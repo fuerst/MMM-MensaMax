@@ -5,6 +5,24 @@ const NodeHelper = require("node_helper");
 const apiUrl = "https://m.mensamax.de/graphql/";
 const graphQLClient = new GraphQLClient(apiUrl);
 
+const Log = require("logger");
+
+class HTTPResponseError extends Error {
+	constructor(response) {
+		super(`${response.status} ${response.statusText}`);
+		this.response = response;
+	}
+}
+
+const checkStatus = response => {
+	if (response.ok) {
+		// response.status >= 200 && response.status < 300
+		return response;
+	} else {
+		throw new HTTPResponseError(response);
+	}
+}
+
 // console.error() will log to stderr at Docker Log.
 
 module.exports = NodeHelper.create({
@@ -54,16 +72,25 @@ function getToken(nodeHelper, users) {
 				'Content-Type': 'application/json',
 				'Cookie': 'mensamax_superglue=https://mensaweb.de' // Ansonsten Redirect-Schleife auf sich selbst
 			},
+			redirect: 'follow',
+			follow: 3,
 		})
-			.then(NodeHelper.checkFetchStatus)
+			.then(checkStatus)
 			.then(res => res.json())
 			.then(json => {
-				nodeHelper.sendSocketNotification("RECEIVED_TOKEN", {
-					benutzername: user.benutzername,
-					token: json.text
-				})
+				if (json.text) {
+					nodeHelper.sendSocketNotification("RECEIVED_TOKEN", {
+						benutzername: user.benutzername,
+						token: json.text
+					})
+				}
+				else {
+					Log.error("MMM-MensaMax: Keinen Token erhalten.");
+				}
 			})
-			.catch(error => console.error(error))
+			.catch(error => {
+				Log.error(error);
+			})
 	});
 }
 
