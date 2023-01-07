@@ -32,6 +32,7 @@ Module.register("MMM-MensaMax", {
 	socketNotificationReceived: function(notification, payload) {
 		if (notification === "RECEIVED_TOKEN") {
 			this.storeAddData(payload.benutzername, 'token', payload.token);
+			this.storeAddData(payload.benutzername, 'mensamaxSuperglue', payload.mensamaxSuperglue);
 			this.sendSocketNotification("GET_BENUTZER_DATEN", this.currentUser(payload.benutzername));
 		}
 
@@ -107,7 +108,11 @@ Module.register("MMM-MensaMax", {
 	},
 
 	currentUser: function(benutzername) {
-		return { benutzername, token: this.dataStore.get(benutzername).token };
+		return {
+			benutzername,
+			token: this.dataStore.get(benutzername).token,
+			mensamaxSuperglue: this.dataStore.get(benutzername).mensamaxSuperglue
+		};
 	},
 
 	currencyFormat: function(amount) {

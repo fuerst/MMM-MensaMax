@@ -7,22 +7,6 @@ const graphQLClient = new GraphQLClient(apiUrl);
 
 const Log = require("logger");
 
-class HTTPResponseError extends Error {
-	constructor(response) {
-		super(`${response.status} ${response.statusText}`);
-		this.response = response;
-	}
-}
-
-const checkStatus = response => {
-	if (response.ok) {
-		// response.status >= 200 && response.status < 300
-		return response;
-	} else {
-		throw new HTTPResponseError(response);
-	}
-}
-
 // console.error() will log to stderr at Docker Log.
 
 module.exports = NodeHelper.create({
@@ -35,69 +19,74 @@ module.exports = NodeHelper.create({
 		}
 
 		if (notification === "GET_BENUTZER_DATEN") {
-			addRequestHeaders(payload.token);
+			addRequestHeaders(payload.token, payload.mensamaxSuperglue);
 			queryBenutzerDaten(self, payload.benutzername);
 		}
 
 		if (notification === "GET_KONTOSTAND") {
-			addRequestHeaders(payload.token)
+			addRequestHeaders(payload.token, payload.mensamaxSuperglue)
 			queryKontostand(self, payload.benutzername)
 		}
 
 		if (notification === "GET_SPEISEPLAN") {
-			addRequestHeaders(payload.token)
+			addRequestHeaders(payload.token, payload.mensamaxSuperglue)
 			querySpeiseplan(self, payload.benutzername, payload.config)
 		}
 
 		if (notification === "GET_BESTELLUEBERSICHT") {
-			addRequestHeaders(payload.token)
+			addRequestHeaders(payload.token, payload.mensamaxSuperglue)
 			queryBestellübersicht(self, payload.benutzername, payload.config)
 		}
 	}
 });
 
 function getToken(nodeHelper, users) {
-	users.forEach(user => {
+	users.forEach(async user => {
 		const url = apiUrl + 'auth/login';
-		const data = {
+		const loginData = {
 			projekt: user.projekt,
 			benutzername: user.benutzername,
 			passwort: user.passwort
 		};
-
-		fetch(url, {
+		const options = {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: JSON.stringify(loginData),
 			headers: {
-				'Content-Type': 'application/json',
-				'Cookie': 'mensamax_superglue=https://mensaweb.de' // Ansonsten Redirect-Schleife auf sich selbst
-			},
-			redirect: 'follow',
-			follow: 3,
-		})
-			.then(checkStatus)
-			.then(res => res.json())
-			.then(json => {
-				if (json.text) {
-					nodeHelper.sendSocketNotification("RECEIVED_TOKEN", {
-						benutzername: user.benutzername,
-						token: json.text
-					})
-				}
-				else {
-					Log.error("MMM-MensaMax: Keinen Token erhalten.");
-				}
+				'Content-Type': 'application/json'
+			}
+		}
+
+		try {
+			// Extract "mensamax_superglue" Cookie needed for following requests.
+			options.redirect = 'manual';
+			const response = await fetch(url, options);
+			const mensamaxSuperglue = response.headers.raw()['set-cookie']
+			.at(-1)
+			.split(';')
+			.at(0);
+
+			options.headers.Cookie = mensamaxSuperglue;
+
+			// Get token.
+			options.redirect = 'follow';
+			const response2 = await fetch(url, options);
+			const data = await response2.json();
+
+			nodeHelper.sendSocketNotification("RECEIVED_TOKEN", {
+				benutzername: user.benutzername,
+				token: data.text,
+				mensamaxSuperglue: mensamaxSuperglue
 			})
-			.catch(error => {
-				Log.error(error);
-			})
+		} catch (error) {
+			Log.error(error.type, error.message);
+		}
 	});
 }
 
-function addRequestHeaders(token) {
+function addRequestHeaders(token, mensamaxSuperglue) {
   graphQLClient.setHeaders({
     'Content-Type': 'application/json',
-    'Cookie': 'mensamax_superglue=https://mensaweb.de;token=' + token
+    'Cookie': `${mensamaxSuperglue};token=` + token
   });
 }
 
