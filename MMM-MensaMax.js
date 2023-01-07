@@ -63,9 +63,10 @@ Module.register("MMM-MensaMax", {
 
 	getDom: function () {
 		const TEXT_WAIT_FOR_DATA = '<em class="xsmall thin">Warte auf Daten...</em>';
+		const userList = [...this.dataStore.entries()].sort();
 
 		let content = '';
-		for (const [, user] of this.dataStore.entries()) {
+		for (const [, user] of userList) {
 			if (!user.bestelluebersicht) {
 				continue;
 			}
