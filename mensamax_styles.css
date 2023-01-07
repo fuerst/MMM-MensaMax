@@ -11,6 +11,7 @@
 .mensamax th:first-child,
 .mensamax td:first-child {
   padding-right: 1rem;
+  width: 1px;
 }
 
 .mensamax .red {
